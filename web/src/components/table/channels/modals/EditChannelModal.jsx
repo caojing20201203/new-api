@@ -3419,8 +3419,7 @@ const EditChannelModal = (props) => {
                               },
                               {
                                 value: DEPRECATED_DOUBAO_CODING_PLAN_BASE_URL,
-                                label: doubaoCodingPlanOptionLabel,
-                                disabled: !canKeepDeprecatedDoubaoCodingPlan,
+                                label: 'Doubao Coding Plan',
                               },
                             ]}
                             defaultValue='https://ark.cn-beijing.volces.com'
