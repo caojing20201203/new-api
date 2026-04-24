@@ -41,6 +41,7 @@ type ChannelOtherSettings struct {
 	UpstreamModelUpdateLastDetectedModels []string      `json:"upstream_model_update_last_detected_models,omitempty"` // 上次检测到的可加入模型
 	UpstreamModelUpdateLastRemovedModels  []string      `json:"upstream_model_update_last_removed_models,omitempty"`  // 上次检测到的可删除模型
 	UpstreamModelUpdateIgnoredModels      []string      `json:"upstream_model_update_ignored_models,omitempty"`       // 手动忽略的模型
+	ResponsesViaChatCompletions           bool          `json:"responses_via_chat_completions,omitempty"`             // 将 Responses API 请求转换为 Chat Completions（用于不支持 Responses API 的上游）
 }
 
 func (s *ChannelOtherSettings) IsOpenRouterEnterprise() bool {
