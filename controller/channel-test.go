@@ -95,13 +95,25 @@ func testChannel(channel *model.Channel, testModel string, endpointType string, 
 
 	requestPath := "/v1/chat/completions"
 
+	// 检查 Base URL 是否已经包含完整的端点路径
+	// 如果已包含，不进行自动检测，直接使用 chat completions 格式
+	baseURL := channel.GetBaseURL()
+	baseURLContainsEndpoint := baseURL != "" && (
+		strings.Contains(baseURL, "/chat/completions") ||
+			strings.Contains(baseURL, "/embeddings") ||
+			strings.Contains(baseURL, "/images/") ||
+			strings.Contains(baseURL, "/rerank") ||
+			strings.Contains(baseURL, "/responses") ||
+			strings.Contains(baseURL, "/audio/") ||
+			strings.Contains(baseURL, "/v1/messages"))
+
 	// 如果指定了端点类型，使用指定的端点类型
 	if endpointType != "" {
 		if endpointInfo, ok := common.GetDefaultEndpointInfo(constant.EndpointType(endpointType)); ok {
 			requestPath = endpointInfo.Path
 		}
-	} else {
-		// 如果没有指定端点类型，使用原有的自动检测逻辑
+	} else if !baseURLContainsEndpoint {
+		// 如果没有指定端点类型且 Base URL 不包含完整端点路径，使用原有的自动检测逻辑
 
 		if strings.Contains(strings.ToLower(testModel), "rerank") {
 			requestPath = "/v1/rerank"
@@ -121,7 +133,7 @@ func testChannel(channel *model.Channel, testModel string, endpointType string, 
 			requestPath = "/v1/images/generations"
 		}
 
-		// responses-only models
+		// responses-only models (only if channel is Codex type)
 		if strings.Contains(strings.ToLower(testModel), "codex") {
 			requestPath = "/v1/responses"
 		}

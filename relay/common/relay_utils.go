@@ -23,8 +23,17 @@ type HasImage interface {
 }
 
 func GetFullRequestURL(baseURL string, requestURL string, channelType int) string {
-	// 如果 baseURL 已经包含 /chat/completions，直接使用 baseURL
-	if strings.Contains(baseURL, "/chat/completions") {
+	// 如果 baseURL 已经包含完整的 API 端点路径，直接使用 baseURL
+	// 支持常见的端点类型
+	containsEndpoint := strings.Contains(baseURL, "/chat/completions") ||
+		strings.Contains(baseURL, "/embeddings") ||
+		strings.Contains(baseURL, "/images/") ||
+		strings.Contains(baseURL, "/rerank") ||
+		strings.Contains(baseURL, "/responses") ||
+		strings.Contains(baseURL, "/audio/") ||
+		strings.Contains(baseURL, "/v1/messages")
+
+	if containsEndpoint {
 		return baseURL
 	}
 
