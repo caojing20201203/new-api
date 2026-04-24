@@ -130,6 +130,10 @@ func OaiResponsesStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp
 		}
 	})
 
+	// Always send [DONE] marker to properly terminate the stream for Responses API
+	// This ensures the client knows the stream has completed
+	_ = helper.StringData(c, "[DONE]")
+
 	if usage.CompletionTokens == 0 {
 		// 计算输出文本的 token 数量
 		tempStr := responseTextBuilder.String()

@@ -244,7 +244,18 @@ func StreamScannerHandler(c *gin.Context, resp *http.Response, info *relaycommon
 			if len(data) < 6 {
 				continue
 			}
-			if data[:5] != "data:" && data[:6] != "[DONE]" {
+
+			// Check for standalone [DONE] first (no data: prefix)
+			if data[:6] == "[DONE]" {
+				info.StreamStatus.SetEndReason(relaycommon.StreamEndReasonDone, nil)
+				if common.DebugEnabled {
+					println("received [DONE], stopping scanner")
+				}
+				return
+			}
+
+			// Check for data: prefix
+			if data[:5] != "data:" {
 				continue
 			}
 			data = data[5:]
