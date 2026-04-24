@@ -1787,6 +1787,8 @@ const EditChannelModal = (props) => {
         settings.allow_inference_geo = localInputs.allow_inference_geo === true;
         settings.allow_speed = localInputs.allow_speed === true;
         settings.claude_beta_query = localInputs.claude_beta_query === true;
+      }
+      if ([1, 3, 14, 25].includes(localInputs.type)) {
         settings.responses_via_chat_completions = localInputs.responses_via_chat_completions === true;
       }
     }
