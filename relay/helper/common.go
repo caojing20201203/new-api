@@ -74,7 +74,7 @@ func ClaudeChunkData(c *gin.Context, resp dto.ClaudeResponse, data string) {
 
 func ResponseChunkData(c *gin.Context, resp dto.ResponsesStreamResponse, data string) {
 	c.Render(-1, common.CustomEvent{Data: fmt.Sprintf("event: %s\n", resp.Type)})
-	c.Render(-1, common.CustomEvent{Data: fmt.Sprintf("data: %s", data)})
+	c.Render(-1, common.CustomEvent{Data: fmt.Sprintf("data: %s\n\n", data)})
 	_ = FlushWriter(c)
 }
 
