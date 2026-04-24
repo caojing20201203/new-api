@@ -614,6 +614,37 @@ func detectErrorMessageFromJSONBytes(jsonBytes []byte) string {
 func buildTestRequest(model string, endpointType string, channel *model.Channel, isStream bool) dto.Request {
 	testResponsesInput := json.RawMessage(`[{"role":"user","content":"hi"}]`)
 
+	// 检查 Base URL 是否已经包含完整的端点路径
+	// 如果已包含，直接返回 chat completions 格式的请求，不进行模型名检测
+	baseURL := channel.GetBaseURL()
+	baseURLContainsEndpoint := baseURL != "" && (
+		strings.Contains(baseURL, "/chat/completions") ||
+			strings.Contains(baseURL, "/embeddings") ||
+			strings.Contains(baseURL, "/images/") ||
+			strings.Contains(baseURL, "/rerank") ||
+			strings.Contains(baseURL, "/responses") ||
+			strings.Contains(baseURL, "/audio/") ||
+			strings.Contains(baseURL, "/v1/messages"))
+
+	if baseURLContainsEndpoint {
+		// Base URL 已包含完整端点，直接使用 chat completions 格式
+		testRequest := &dto.GeneralOpenAIRequest{
+			Model:  model,
+			Stream: lo.ToPtr(isStream),
+			Messages: []dto.Message{
+				{
+					Role:    "user",
+					Content: "hi",
+				},
+			},
+		}
+		if isStream {
+			testRequest.StreamOptions = &dto.StreamOptions{IncludeUsage: true}
+		}
+		testRequest.MaxTokens = lo.ToPtr(uint(16))
+		return testRequest
+	}
+
 	// 根据端点类型构建不同的测试请求
 	if endpointType != "" {
 		switch constant.EndpointType(endpointType) {
