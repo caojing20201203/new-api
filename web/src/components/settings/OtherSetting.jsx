@@ -439,11 +439,69 @@ const OtherSetting = () => {
                 label={t('Logo 图片地址')}
                 placeholder={t('在此输入 Logo 图片地址')}
                 field={'Logo'}
+                value={inputs.Logo}
                 onChange={handleInputChange}
+                style={{ marginBottom: 12 }}
               />
-              <Button onClick={submitLogo} loading={loadingInput['Logo']}>
-                {t('设置 Logo')}
-              </Button>
+              <input
+                type='file'
+                accept='image/*'
+                style={{ display: 'none' }}
+                ref={(input) => (this.logoFileInput = input)}
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+                  const formData = new FormData();
+                  formData.append('image', file);
+                  try {
+                    const res = await API.post('/api/upload/image', formData, {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    });
+                    const { success, message, data } = res.data;
+                    if (success) {
+                      setInputs({ ...inputs, Logo: data.url });
+                    } else {
+                      showError(message || '上传失败');
+                    }
+                  } catch (error) {
+                    showError(error.message || '上传失败');
+                  }
+                  e.target.value = '';
+                }}
+              />
+              <Space>
+                <Button
+                  onClick={() => {
+                    this.logoFileInput && this.logoFileInput.click();
+                  }}
+                  disabled={loadingInput['Logo']}
+                >
+                  {t('浏览...')}
+                </Button>
+                <Button onClick={submitLogo} loading={loadingInput['Logo']}>
+                  {t('设置 Logo')}
+                </Button>
+              </Space>
+              {inputs.Logo && (
+                <div style={{ marginTop: 12 }}>
+                  <img
+                    src={inputs.Logo}
+                    alt='Logo Preview'
+                    style={{
+                      maxWidth: 200,
+                      maxHeight: 60,
+                      border: '1px solid #d9d9d9',
+                      borderRadius: 4,
+                      padding: 4,
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
               <Form.TextArea
                 label={t('首页内容')}
                 placeholder={t(
