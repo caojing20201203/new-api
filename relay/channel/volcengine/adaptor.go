@@ -241,6 +241,17 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 	if baseUrl == "" {
 		baseUrl = channelconstant.ChannelBaseURLs[channelconstant.ChannelTypeVolcEngine]
 	}
+	
+	// 如果 baseUrl 已经包含完整的请求路径（如 /chat/completions），直接使用
+	if strings.Contains(baseUrl, "/chat/completions") || 
+	   strings.Contains(baseUrl, "/embeddings") || 
+	   strings.Contains(baseUrl, "/images/") || 
+	   strings.Contains(baseUrl, "/rerank") || 
+	   strings.Contains(baseUrl, "/responses") ||
+	   strings.Contains(baseUrl, "/audio/speech") {
+		return baseUrl, nil
+	}
+	
 	specialPlan, hasSpecialPlan := channelconstant.ChannelSpecialBases[baseUrl]
 
 	switch info.RelayFormat {
