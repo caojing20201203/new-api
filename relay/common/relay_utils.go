@@ -23,6 +23,11 @@ type HasImage interface {
 }
 
 func GetFullRequestURL(baseURL string, requestURL string, channelType int) string {
+	// 如果 baseURL 已经包含 /chat/completions，直接使用 baseURL
+	if strings.Contains(baseURL, "/chat/completions") {
+		return baseURL
+	}
+
 	fullRequestURL := fmt.Sprintf("%s%s", baseURL, requestURL)
 
 	if strings.HasPrefix(baseURL, "https://gateway.ai.cloudflare.com") {
